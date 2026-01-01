@@ -1,0 +1,95 @@
+
+# Instructions
+
+// MRI
+D0: AND = AC ^ DR
+D1: ADD = AC + DR, E <- Cout
+D2: LDA = AC <- M[AR]
+D3: STA = M[AR] <- AC
+D4: BUN = PC <- AR
+D5: BSA = M[AR] <- PC, PC <- AR + 1
+D6: ISZ = M[AR] <- M[AR] + 1 if M[AR] + 1 = 0 then PC <- PC + 1
+D7: SUB: Subtract = AC - DR, E <- Cout 
+D8: LIX: Load Index Register = IR <- DR
+D9: LIA: Load Index Register From Accumulator = IR <- AC
+D10: INX: Increase Index Register = IR <- IR + DR
+D11: JZ  : Jump if Zero     = if (AC = 0)  then PC <- DR
+D12: JNZ : Jump if Not Zero = if (AC != 0) then PC <- DR
+D13: JP  : Jump if Positive = if (AC > 0)  then PC <- DR
+D14: JN  : Jump if Negative = if (AC < 0)  then PC <- DR
+
+// RRI
+B0: CLA = AC <- 0
+B1: CLE = E <- 0
+B2: CMA = AC <- AC'
+B3: CME = E <- E'
+B4: CIR = AC <- shr AC, AC(15) <- E, E <- AC(0)
+B5: CIL = AC <- shl AC, AC(0) <- E, E <- AC(15)
+B6: INC = AC <- AC + 1
+B7: SPA = if (AC(15) = 0) then (PC <- PC + 1)
+B8: SNA = if (AC(15) = 1) then (PC <- PC + 1)
+B9: SZA = if (AC = 0) then (PC <- PC + 1)
+B10: SZE = if (E = 0) then (PC <- PC + 1)
+B11: HLT = S <- 0
+
+//IOI
+B0: INP = AC(0-7) <- INPR, FGI <- 0
+B1: OUT = OUTR <- AC(0-7), FGO <- 0
+B2: SKI = if (FGI = 1) then (PC <- PC + 1)
+B3: SKO = if (FGO = 1) then (PC <- PC + 1)
+B4: ION = IEN <- 1
+B5: IOF = IEN <- 0
+
+// Register Architecture
+
+[ 00 0000 000000000000 ] = 18 bits
+
+Addressing Bits = 2
+Opcode Bits = 4
+Address Bits = 12
+
+RAM = 4096 * 18
+
+# Registers
+
+AC = 12 bit
+PC = 12 bit
+AR = 12 bit
+DR = 12 bit
+TR = 12 bit
+IX: Index Register = 12 bit
+IR = 18 bit
+INPR = 8 bit
+OUTR = 8 bit
+
+# Addressing Mode
+I1: 00 = Direct   = NOP
+I2: 01 = Indirect = AR <- M[AR]
+I3: 10 = Index    = AR <- M[AR + IX]
+11 = NOP
+
+IX = 1
+10 1
+11 5
+20 2
+30 ...
+
+10 LDA 10
+00 ADD 20
+00 STA 30
+
+
+T0: AR <- PC
+T1: IR <- M[AR], PC <- PC + 1
+T2: I <- IR(16-17), O <- Decoded(IR(12-15)), AR <- IR(0-11)
+
+I 00
+O D2
+AR 10
+
+I0.D15'.T3: NOP
+D2.T4: DR <- M[AR]
+D2.T5: AC <- DR, SC <- 0
+
+
+
