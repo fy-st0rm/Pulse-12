@@ -92,4 +92,34 @@ D2.T4: DR <- M[AR]
 D2.T5: AC <- DR, SC <- 0
 
 
+# BUS
 
+Source/Destination Selection
+
+S3 S2 S1 S0
+0  0  0  0   AC
+0  0  0  1   PC
+0  0  1  0   AR
+0  0  1  1   DR
+0  1  0  0   TR
+0  1  0  1   IX
+0  1  1  0   IR
+0  1  1  1   INPR
+1  0  0  0   OUTR
+
+example: AC <- DR
+source: 0011
+destination: 0000
+
+
+# ALU
+
+S1 S0 Cin
+0  0  0    D = A + B          ; Add
+0  0  1    D = A + B + 1      ; Add with carry
+0  1  0    D = A + B'         ; Subtract with borrow
+0  1  1    D = A + B' + 1     ; Subtract
+1  0  0    D = A              ; Transfer A
+1  0  1    D = A + 1          ; Increment A
+1  1  0    D = A - 1          ; Decrement A
+1  1  1    D = A              ; Transfer A
