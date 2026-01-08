@@ -68,6 +68,43 @@ I2: 01 = Indirect = AR <- M[AR]
 I3: 10 = Index    = AR <- M[AR + IX]
 11 = NOP
 
+
+# BUS
+
+Source/Destination Selection
+
+S3 S2 S1 S0
+0  0  0  0   AC
+0  0  0  1   PC
+0  0  1  0   AR
+0  0  1  1   DR
+0  1  0  0   TR
+0  1  0  1   IX
+0  1  1  0   IR
+0  1  1  1   INPR
+1  0  0  0   OUTR
+1  0  0  1   Memory
+
+example: AC <- DR
+source: 0011
+destination: 0000
+
+
+# ALU
+
+S1 S0 Cin
+0  0  0    D = A + B          ; Add
+0  0  1    D = A + B + 1      ; Add with carry
+0  1  0    D = A + B'         ; Subtract with borrow
+0  1  1    D = A + B' + 1     ; Subtract
+1  0  0    D = A              ; Transfer A
+1  0  1    D = A + 1          ; Increment A
+1  1  0    D = A - 1          ; Decrement A
+1  1  1    D = A              ; Transfer A
+
+
+# Roughs
+
 IX = 1
 10 1
 11 5
@@ -91,35 +128,12 @@ I0.D15'.T3: NOP
 D2.T4: DR <- M[AR]
 D2.T5: AC <- DR, SC <- 0
 
+D LDA 1
 
-# BUS
+T0: AR <- PC
+T1: IR <- M[AR], PC <- PC + 1
+T2: I <- IR(16-17), O <- Decoded(IR(12-15)), AR <- IR(0-11)
 
-Source/Destination Selection
+D.D15'.T3: NOP
+D2.T4: AC <- M[AR]
 
-S3 S2 S1 S0
-0  0  0  0   AC
-0  0  0  1   PC
-0  0  1  0   AR
-0  0  1  1   DR
-0  1  0  0   TR
-0  1  0  1   IX
-0  1  1  0   IR
-0  1  1  1   INPR
-1  0  0  0   OUTR
-
-example: AC <- DR
-source: 0011
-destination: 0000
-
-
-# ALU
-
-S1 S0 Cin
-0  0  0    D = A + B          ; Add
-0  0  1    D = A + B + 1      ; Add with carry
-0  1  0    D = A + B'         ; Subtract with borrow
-0  1  1    D = A + B' + 1     ; Subtract
-1  0  0    D = A              ; Transfer A
-1  0  1    D = A + 1          ; Increment A
-1  1  0    D = A - 1          ; Decrement A
-1  1  1    D = A              ; Transfer A
