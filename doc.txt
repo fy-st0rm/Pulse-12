@@ -10,9 +10,9 @@ D4: BUN = PC <- AR
 D5: BSA = M[AR] <- PC, PC <- AR + 1
 D6: ISZ = M[AR] <- M[AR] + 1 if M[AR] + 1 = 0 then PC <- PC + 1
 D7: SUB: Subtract = AC - DR, E <- Cout 
-D8: LIX: Load Index Register = IR <- DR
-D9: LIA: Load Index Register From Accumulator = IR <- AC
-D10: INX: Increase Index Register = IR <- IR + DR
+D8: LIX: Load Index Register = IX <- DR
+D9: LIA: Load Index Register From Accumulator = IX <- AC
+D10: INX: Increase Index Register = IX <- IX + AR
 D11: JZ  : Jump if Zero     = if (AC = 0)  then PC <- DR
 D12: JNZ : Jump if Not Zero = if (AC != 0) then PC <- DR
 D13: JP  : Jump if Positive = if (AC > 0)  then PC <- DR
