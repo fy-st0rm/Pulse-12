@@ -13,10 +13,10 @@ D7: SUB: Subtract = AC - DR, E <- Cout
 D8: LIX: Load Index Register = IX <- DR
 D9: LIA: Load Index Register From Accumulator = IX <- AC
 D10: INX: Increase Index Register = IX <- IX + AR
-D11: JZ  : Jump if Zero     = if (AC = 0)  then PC <- DR
-D12: JNZ : Jump if Not Zero = if (AC != 0) then PC <- DR
-D13: JP  : Jump if Positive = if (AC > 0)  then PC <- DR
-D14: JN  : Jump if Negative = if (AC < 0)  then PC <- DR
+D11: JZ  : Jump if Zero     = if (AC = 0)  then PC <- AR
+D12: JNZ : Jump if Not Zero = if (AC != 0) then PC <- AR
+D13: JP  : Jump if Positive = if (AC > 0)  then PC <- AR
+D14: JN  : Jump if Negative = if (AC < 0)  then PC <- AR
 
 // RRI
 B0: CLA = AC <- 0
