@@ -11,7 +11,6 @@ IOIS = {
     "ION": "000000000000",
     "INP": "000000000001",
     "OUT": "000000000010",
-    "IOF": "000000000011"
 }
 
 MRIS = {
@@ -42,44 +41,63 @@ AMS = {
 def main():
     try:
         with open(sys.argv[1], 'r') as file:
-            line_num = 0
-            for line in file:
-                line_num += 1
-                c_line = line.replace('\n', '')
-                token = c_line.split(' ')
-                am = token[0]
-                ins = token[1]
+            for line_num, line in enumerate(file, start=1):
+                c_line = line.strip()
+                if not c_line:
+                    continue
 
-                if not am in AMS:
-                    raise Exception(f"LINE {line_num}: Addressingg Mode -> {am} not supported")
-                
+                token = c_line.split()
                 output = ""
-                if ins in RRIS:
+
+                # ---------- RRIS ----------
+                if token[0] in RRIS:
+                    ins = token[0]
                     output += "00"
                     output += "1111"
                     output += RRIS[ins]
-                elif ins in IOIS:
+
+                # ---------- IOIS ----------
+                elif token[0] in IOIS:
+                    ins = token[0]
                     output += "11"
                     output += "1111"
                     output += IOIS[ins]
-                elif ins in MRIS:
+
+                # ---------- MRIS ----------
+                else:
+                    if len(token) < 3:
+                        raise Exception(
+                            f"LINE {line_num}: MRIS requires <addressing_mode> <instruction> <address>"
+                        )
+
+                    am, ins, addr = token[0], token[1], token[2]
+
+                    if am not in AMS:
+                        raise Exception(
+                            f"LINE {line_num}: Addressing Mode -> {am} not supported"
+                        )
+
+                    if ins not in MRIS:
+                        raise Exception(
+                            f"LINE {line_num}: Instruction -> {ins} not supported"
+                        )
+
                     output += AMS[am]
                     output += MRIS[ins]
 
-                    if len(token) >= 3:
-                        res=''
-                        if int(token[2]) < 0:
-                            res = format((1 << 12)+ token[2], '012b')
-                        else:
-                            res = format(int(token[2]), '012b')
-                        output += res 
+                    addr = int(addr)
+                    if addr < 0:
+                        addr_bin = format((1 << 12) + addr, "012b")
                     else:
-                        raise Exception(f"LINE {line_num}:{line} [address_data] Memory Register Instructions require a address at the end")
-                else:
-                    raise Exception(f"LINE {line_num}: Instruction -> {ins} not supported")
-                print(format(int(output,2), '05X'))
+                        addr_bin = format(addr, "012b")
+
+                    output += addr_bin
+
+                print(format(int(output, 2), "05X"))
+
     except Exception as e:
         print(e)
+
 
 if __name__ == "__main__":
     main()
