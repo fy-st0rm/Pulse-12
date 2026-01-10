@@ -32,6 +32,11 @@ B9: SZA = if (AC = 0) then (PC <- PC + 1)
 B10: SZE = if (E = 0) then (PC <- PC + 1)
 B11: HLT = S <- 0
 
+B0: CLA = AC <- 0
+B1: INC = AC <- AC + 1
+B2: HLT = S <- 0
+
+
 //IOI
 B0: INP = AC(0-7) <- INPR, FGI <- 0
 B1: OUT = OUTR <- AC(0-7), FGO <- 0
