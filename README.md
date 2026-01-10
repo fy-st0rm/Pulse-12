@@ -170,11 +170,68 @@ T3: AR ← M[AR] (Indirect addressing)
 T4: AC ← M[AR], SC ← 0
 ```
 
-## Example Program
-Load value from memory location 10, add value from 20, store in 30
+## Example Programs
+
+### Example 1: Simple Addition
+
 ```assembly
-D LDA 10
-D ADD 20
-D STA 30
-HLT
+; Load value from memory location 10, add value from 20, store in 30
+LDA 10    ; AC ← M[10]
+ADD 20    ; AC ← AC + M[20]
+STA 30    ; M[30] ← AC
+HLT       ; Stop execution
 ```
+
+### Example 2: Array Summation with Loop
+
+This program sums an array of 5 numbers using indexed addressing and a counting loop.
+
+```assembly
+; Program to sum array elements with a counter
+; Memory Map:
+;   20 = Sum result (accumulator for array sum)
+;   21 = Loop counter (incremented each iteration)
+;   22 = Target count / bias (5 - how many elements to sum)
+;   23 = First array element (1)
+;   24 = Second array element (2)
+;   25 = Third array element (3)
+;   26 = Fourth array element (4)
+;   27 = Fifth array element (5)
+
+0:  D LDA 20      ; Load current sum into AC
+1:  X ADD 23      ; Add array element (indexed: 23 + IX)
+2:  D STA 20      ; Store updated sum back to memory
+3:  D INX 1       ; Increment index register by 1
+4:  D LDA 21      ; Load loop counter
+5:    INC         ; Increment counter (AC ← AC + 1)
+6:  D SUB 22      ; Subtract target count (AC - 5)
+7:  D JN  9       ; If negative (counter < 5), continue loop
+8:  D JZ  12      ; If zero (counter = 5), done - jump to end
+9:  D ADD 22      ; Restore counter value (add back 5)
+10: D STA 21      ; Store incremented counter
+11: D BUN 0       ; Jump back to start of loop
+12: D LDA 20      ; Load final sum result
+13:   HLT         ; Halt execution
+
+; Initial Memory Values:
+; M[20] = 0   (sum starts at 0)
+; M[21] = 0   (counter starts at 0)
+; M[22] = 5   (target count)
+; M[23] = 1   (array[0])
+; M[24] = 2   (array[1])
+; M[25] = 3   (array[2])
+; M[26] = 4   (array[3])
+; M[27] = 5   (array[4])
+;
+; Expected Result: M[20] = 15 (sum of 1+2+3+4+5)
+```
+
+**Program Flow:**
+1. Load current sum from memory location 20
+2. Use indexed addressing to add array element (base address 23 + IX)
+3. Store updated sum back to location 20
+4. Increment index register to point to next array element
+5. Increment loop counter and check if we've processed 5 elements
+6. If counter < 5, continue looping
+7. If counter = 5, load final sum and halt
+
