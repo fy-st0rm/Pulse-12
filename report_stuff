@@ -1,0 +1,313 @@
+
+Chapter 1: Introduction
+
+The Pulse-12 CPU is a 12-bit educational processor designed to demonstrate the fundamental principles of computer organization and architecture. It implements a stored-program model with an 18-bit instruction format, supporting multiple addressing modes and a multi-cycle execution approach. The architecture is intentionally kept simple while still being powerful enough to illustrate core concepts such as instruction decoding, register-based computation, memory access, and program control flow.
+
+Pulse-12 follows a single-accumulator design, where most arithmetic and logical operations are performed using the accumulator register. To enhance flexibility and efficiency, the processor includes additional registers such as an index register, temporary register, and dedicated input/output registers. The presence of direct, indirect, and indexed addressing modes allows the CPU to support structured programming constructs like loops, arrays, and subroutines.
+
+The processor uses a unified memory for both instructions and data, making it a Von Neumann architecture. Instructions are executed through a well-defined sequence of fetch, decode, and execute phases, implemented using micro-operations and control signals. This multi-cycle execution model provides clear visibility into the internal behavior of the CPU, making it especially suitable for implementation using digital logic simulation tools and for educational analysis.
+
+Overall, the Pulse-12 CPU serves as a compact yet complete instructional model for understanding how a basic processor operates at the hardware level, bridging the gap between theoretical concepts and practical digital system design.
+
+
+
+1.1: Instruction Format
+
+The Pulse-12 CPU uses a fixed-length 18-bit instruction word, which simplifies instruction decoding and control logic design. Each instruction is divided into three distinct fields: addressing mode, opcode, and address/operand.
+
+[I1 I0] [O3 O2 O1 O0] [A11 A10 A9 A8 A7 A6 A5 A4 A3 A2 A1 A0]
+
+Addressing Mode Field (2 bits)
+The two most significant bits (I1 I0) specify the addressing mode used by the instruction. These bits determine how the effective address is computed before executing the operation.
+
+Opcode Field (4 bits)
+The opcode field defines the operation to be performed, such as arithmetic, logical, memory access, or control flow instructions. With 4 bits, up to 16 distinct operations can be encoded.
+
+Address Field (12 bits)
+The address field contains the memory address of the operand or the target location for branch and store instructions. Since the address width is 12 bits, the processor can directly address 4096 memory locations.
+
+This structured instruction format allows the Pulse-12 CPU to support multiple addressing modes while maintaining simple and efficient decoding logic.
+
+
+1.2: System Components
+
+The Pulse-12 CPU is composed of several interconnected hardware components that work together to execute instructions. These components can be broadly classified into registers, arithmetic logic unit, memory system, bus structure, and control unit.
+
+1. Register Set
+
+Registers are high-speed storage elements used to hold data, instructions, and addresses during execution.
+
+Accumulator (AC): Primary register for arithmetic and logical operations
+Program Counter (PC): Holds the address of the next instruction to be fetched
+Address Register (AR): Stores memory addresses for data access
+Data Register (DR): Temporarily holds data read from or written to memory
+Temporary Register (TR): Used for intermediate data storage during execution
+Index Register (IX): Supports indexed addressing for array and loop operations
+Instruction Register (IR): Holds the currently executing instruction
+Input Register (INPR): Receives data from input devices
+Output Register (OUTR): Sends data to output devices
+
+2. Arithmetic Logic Unit (ALU)
+
+The ALU performs all arithmetic and logical operations required by the processor. It supports functions such as addition, subtraction, increment, decrement, and data transfer operations. Control signals select the desired ALU operation and the source registers for its inputs.
+
+3. Memory System
+
+Pulse-12 uses a single unified memory for storing both instructions and data, consistent with the Von Neumann architecture. The memory size is 4096 × 18 bits, enabling storage of programs and data within the same address space.
+
+4. Bus Architecture
+
+A common internal bus is used to transfer data between registers, memory, and the ALU. Multiplexer-based source and destination selection allows only one data transfer at a time, simplifying hardware design while ensuring controlled data movement.
+
+5. Control Unit
+
+The control unit coordinates all CPU operations by generating timing and control signals. It sequences the instruction execution through fetch, decode, and execute phases using a step counter and decoded instruction information.
+
+
+1.3: System Description
+
+The Pulse-12 CPU is a 12-bit, multi-cycle processor designed using a Von Neumann architecture, where both program instructions and data are stored in a common memory. The system operates through a coordinated interaction between the control unit, register set, arithmetic logic unit (ALU), system bus, and main memory (RAM).
+
+1) Memory (RAM) Organization
+
+The main memory of the Pulse-12 CPU consists of 4096 memory locations, each capable of storing 18 bits. This memory configuration allows the CPU to store complete instructions as well as data values in a single unified address space.
+
+Memory Size: 4096 × 18 bits
+Address Width: 12 bits
+Data Width: 18 bits
+Architecture Type: Unified (instructions and data share the same memory)
+
+Each memory location is addressed using the 12-bit Address Register (AR). During instruction fetch, the memory returns an 18-bit word that is loaded into the Instruction Register (IR). During data access operations, the same memory is used to read or write operand values.
+
+The use of 18-bit memory words ensures compatibility with the instruction format and allows both instruction words and data values to be stored without additional alignment or padding.
+
+2) Instruction Execution Flow
+
+The Pulse-12 CPU executes instructions using a multi-cycle execution model, where each instruction is broken down into a sequence of micro-operations controlled by timing signals.
+
+a) Fetch Phase
+The Program Counter (PC) provides the address of the next instruction. This address is loaded into the Address Register (AR), and the corresponding 18-bit instruction word is fetched from RAM and stored in the Instruction Register (IR). The PC is then incremented to point to the next instruction.
+
+b) Decode Phase
+The control unit decodes the opcode and addressing mode from the Instruction Register. The address field is extracted, and the effective address is determined based on the selected addressing mode (direct, indirect, or indexed).
+
+c) Execute Phase
+Depending on the decoded instruction, the CPU may:
+
+- Read data from RAM into the Data Register (DR)
+- Write data from the Accumulator (AC) to RAM
+- Perform arithmetic or logical operations using the ALU
+- Modify the Program Counter for branch and jump instructions
+
+d) Interrupt Handling
+When interrupts are enabled, external input events can temporarily suspend normal instruction execution. The CPU services the interrupt by accessing a predefined memory location before resuming program execution.
+
+
+
+Chapter 2: Design Consideration
+
+The following section describes the design process and the internal architecture of our computer as well as the instruction set supported by this computer.
+
+2.1. Instruction Format (already done)
+
+2.2. Addressing Mode
+The Pulse-12 CPU supports multiple addressing modes to provide flexibility in accessing operands and to simplify program implementation. The addressing mode used by an instruction is determined by the two most significant bits of the 18-bit instruction word, denoted as I1 and I0.
+
+I1 I0  Addressing Mode Description
+0  0   Direct  Operand address is used directly
+0  1   Indirect  Address field points to a memory location containing the effective address
+1  0   Indexed Effective address is obtained by adding index register to address field
+1  1   — Not used
+
+The selected addressing mode controls how the effective address (EA) is computed before executing the instruction.
+
+1. Direct Addressing Mode
+In direct addressing mode, the address field of the instruction directly specifies the memory location of the operand.
+The 12-bit address field is copied directly into the Address Register (AR).
+No additional memory access is required to compute the effective address.
+This is the simplest and fastest addressing mode.
+
+Operation
+EA = Address
+
+Example
+D LDA 10
+
+Execution:
+- Address field = 10
+- Effective Address = 10
+- Operation performed: AC <- M[10]
+
+2. Indirect Addressing Mode
+In indirect addressing mode, the address field of the instruction points to a memory location that contains the actual effective address of the operand.
+The CPU first accesses memory using the instruction’s address field.
+The content of that memory location becomes the effective address.
+This mode allows dynamic referencing of operands.
+
+Operation
+EA = M[Address]
+
+Example
+I LDA 10
+
+Memory contents:
+M[10] = 50
+M[50] = 25
+
+Execution:
+- Address field = 10
+- Effective Address = M[10] = 50
+- Operation performed: AC <- M[50]
+
+3. Indexed Addressing Mode
+In indexed addressing mode, the effective address is calculated by adding the contents of the Index Register (IX) to the address field of the instruction.
+The address field acts as a base address.
+The Index Register provides an offset.
+This mode is especially useful for array and loop-based operations.
+
+Operation
+EA = Address + IX
+
+Example
+X ADD 23
+
+Register and memory values:
+IX = 2
+M[25] = 7
+
+Execution:
+- Address field = 23
+- Effective Address = 23 + 2 = 25
+- Operation performed: AC <- AC + M[25]
+
+
+2.3. Components
+The Pulse-12 CPU is composed of several interconnected hardware components that cooperate to fetch, decode, and execute instructions. Each component performs a specific function, and together they form a complete and functional processor.
+
+1. Registers
+Registers are high-speed storage elements used to hold data, addresses, and instructions during execution. The Pulse-12 CPU uses a combination of general-purpose and special-purpose registers.
+
+Accumulator (AC):
+Size = 12 bit
+The primary register for arithmetic and logical operations. ALU results are stored in the accumulator.
+
+Program Counter (PC):
+Size = 12 bit
+Holds the address of the next instruction to be fetched from memory. It is incremented automatically after each instruction fetch or updated during branch operations.
+
+Address Register (AR):
+Size = 12 bit
+Stores the memory address for instruction fetches and data accesses.
+
+Data Register (DR):
+Size = 12 bit
+Temporarily holds data read from memory or data to be written back to memory.
+
+Temporary Register (TR):
+Size = 12 bit
+Used to store intermediate values during instruction execution.
+
+Index Register (IX):
+Size = 12 bit
+Supports indexed addressing by providing an offset added to the base address.
+
+Instruction Register (IR):
+Size = 18 bit
+Holds the currently fetched 18-bit instruction while it is being decoded and executed.
+
+Input Register (INPR):
+Size = 8 bit
+Receives input data from external input devices.
+
+Output Register (OUTR):
+Size = 8 bit
+Stores data to be sent to output devices.
+
+2. Sequence Counter (SC)
+The Sequence Counter (SC) is a 4-bit counter that controls the timing of instruction execution. It counts sequentially from T0 to T15, representing distinct timing steps within the instruction cycle.
+
+- The 4-bit output of the sequence counter is connected to a decoder, which generates individual timing signals (T0, T1, …, T15).
+- Each timing signal activates a specific set of micro-operations.
+- At the end of instruction execution, the sequence counter is cleared to zero, restarting the cycle at T0 for the next instruction.
+
+The use of a sequence counter simplifies the control logic by breaking instruction execution into clearly defined steps.
+
+3. Instruction Decoder
+The Instruction Decoder interprets the contents of the Instruction Register (IR) and extracts essential control information.
+
+- The opcode field (bits 15–12 of IR) is decoded to determine the operation to be performed.
+- The addressing mode bits (bits 17–16 of IR) specify how the effective address is computed.
+- The address field (bits 11–0 of IR) is transferred to the Address Register.
+
+The decoded outputs are combined with timing signals from the sequence counter to generate appropriate control signals for execution.
+
+4. Arithmetic Logic Unit (ALU)
+The Arithmetic Logic Unit (ALU) performs all arithmetic and logical operations in the CPU.
+- Supported operations include addition, subtraction, increment, decrement, logical AND, and data transfer.
+- Input operands to the ALU are selected from registers such as AC, DR, AR, IX, or PC through control signals.
+- The result of an ALU operation is typically stored in the Accumulator or another destination register.
+The ALU is controlled by function-select signals that determine the specific operation to be executed.
+
+4.1. ALU Selection Table
+The operation performed by the Arithmetic Logic Unit (ALU) is controlled using two function select lines (S1, S0) and a carry-in (Cin) input. By appropriately setting these control signals, the ALU can perform arithmetic and data manipulation operations.
+
+ALU Function Selection
+S1  S0  Cin ALU Operation   Description
+0   0   0    D = A + B       Addition
+0   0   1    D = A + B + 1   Add with carry
+0   1   0    D = A + B′      Subtract with borrow
+0   1   1    D = A + B′ + 1  Subtraction
+1   0   0    D = A           Transfer A
+1   0   1    D = A + 1       Increment A
+1   1   0    D = A − 1       Decrement A
+1   1   1    D = A           Transfer A
+
+4.2. ALU Input Register Selection
+The ALU input operands are selected using a 3-bit register select field, which determines which register supplies data to the ALU input.
+
+Select Code Register
+000    Index Register (IX)
+001    Temporary Register (TR)
+010    Data Register (DR)
+011    Address Register (AR)
+100    Program Counter (PC)
+101    Accumulator (AC)
+
+5. Bus System
+The Pulse-12 CPU uses a single common internal bus to transfer data between registers, memory, and the ALU.
+
+- Only one source is allowed to place data on the bus at a time.
+- Destination registers latch data from the bus based on control signals.
+- A multiplexer and decoder-based selection mechanism is used to control bus access.
+
+This shared bus architecture reduces hardware complexity while enabling flexible data movement.
+
+5.1. Bus Selection Table
+
+The Pulse-12 CPU uses a single common internal bus for data transfer between registers, memory, and the ALU. A 4-bit selection code determines which source places its data onto the bus.
+
+Bus Source Selection
+S3  S2  S1  S0  Source Register
+0   0   0   0   Accumulator (AC)
+0   0   0   1   Program Counter (PC)
+0   0   1   0   Address Register (AR)
+0   0   1   1   Data Register (DR)
+0   1   0   0   Temporary Register (TR)
+0   1   0   1   Index Register (IX)
+0   1   1   0   Instruction Register (IR)
+0   1   1   1   Input Register (INPR)
+1   0   0   0   Output Register (OUTR)
+1   0   0   1   Memory
+1   0   1   0   External Data
+
+6. Control Unit (CU)
+The Control Unit (CU) is responsible for coordinating all CPU operations.
+
+- It generates control signals based on:
+  - Decoded instruction information
+  - Timing signals from the sequence counter
+  - System status flags
+- The control unit sequences the CPU through the fetch, decode, execute, and interrupt phases.
+- It ensures that registers, ALU, memory, and bus operations occur in the correct order and at the correct time.
+
+The control unit acts as the “brain” of the Pulse-12 CPU, ensuring correct and orderly instruction execution.
